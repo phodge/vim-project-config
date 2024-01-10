@@ -43,3 +43,22 @@ Provides the following advantages over other plugins:
 * This appears to be oriented around folders (or rather, the parent folder name) and requires you
   to open files from the project root only, or use a 3rd-party plugin like vim-rooter to modify each
   buffer's pwd.
+
+
+## Development
+
+### Running Unit Tests
+
+Unit tests require a recent version of python and the
+[poetry](https://python-poetry.org/) package manager. You will also need to
+install the minimum supported versions of vim and neovim.
+
+Run these commands to run the whole test suite
+
+    # this should install to a virtual environment
+    poetry install --no-root
+    poetry run pytest tests
+
+... or to run a single test:
+
+    poetry run pytest tests/test_something.py [ -v --ff -x]

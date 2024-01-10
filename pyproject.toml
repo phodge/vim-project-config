@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "vim-project-config-tests"
+version = "1.0"
+description = "Test suite for the vim-project-config plugin"
+authors = []
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest = "^7.4.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
