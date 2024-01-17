@@ -1,0 +1,1 @@
+PC005 add support for matching projects to configs via pathname only
