@@ -13,6 +13,38 @@ Provides the following advantages over other plugins:
   configs as time goes on.
 
 
+## Installation
+
+*vim-plug*
+
+    Plug 'phodge/vim-project-config'
+
+
+## Initialisation
+
+**~/.vimrc**
+
+    call vimprojectconfig#initialise({
+        \ 'project_config_dirs': {'Personal': $HOME . '/dotfiles/project-configs'},
+        \ })
+
+
+### Configuration Options
+
+**project_config_dirs**
+
+Required; at least one entry must be provided. Specifies the parent folder(s) where
+project-configs should be stored. You may wish to have configs for your personal projects separate
+
+    " example
+    call vimprojectconfig#initialise({
+        \ 'project_config_dirs': {
+        \     'Personal': $HOME . '/dotfiles/project-configs',
+        \     'Work': $HOME . '/.vim/work-projects',
+        \ },
+        \ })
+
+
 ## Alternative Solutions
 
 [EditorConfig](https://editorconfig.org/)

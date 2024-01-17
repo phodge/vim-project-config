@@ -1,0 +1,1 @@
+PC002 #initialise should validate all user settings before storing in the global dict
