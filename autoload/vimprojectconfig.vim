@@ -14,4 +14,7 @@ fun! vimprojectconfig#initialise(usersettings)
 
   " TODO: PC002: actually validate a:usersettings before storing
   let l:settings.project_config_dirs = get(a:usersettings, 'project_config_dirs', {})
+
+  " TODO:: PC007: validate it is callable
+  let l:settings.get_project_root = get(a:usersettings, 'get_project_root', v:null)
 endfun

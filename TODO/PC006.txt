@@ -1,0 +1,1 @@
+PC006: ensure good error messages for common failure scenarios

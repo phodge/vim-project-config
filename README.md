@@ -26,10 +26,22 @@ Provides the following advantages over other plugins:
 
     call vimprojectconfig#initialise({
         \ 'project_config_dirs': {'Personal': $HOME . '/dotfiles/project-configs'},
+        \ " Use dbakker/vim-projectroot to identify projects
+        \ 'get_project_root': 'projectroot#get',
         \ })
 
 
 ### Configuration Options
+
+**get_project_root**
+
+Required. The name of a vim function which can be used to get the project root folder for a buffer.
+
+    " example
+    call vimprojectconfig#initialise({
+        \ " Use dbakker/vim-projectroot to identify projects
+        \ 'get_project_root': 'projectroot#get',
+        \ })
 
 **project_config_dirs**
 
