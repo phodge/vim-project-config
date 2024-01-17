@@ -1,0 +1,12 @@
+PC009: add caching for reading configs
+
+I propose two layers of caching
+- have a global in-memory cache of projectid -> configloc
+  - do always re-read the cfg each time to ensure still valid
+    - "each time" means once per major operation
+  - XXX: its probably actually OK to NOT reread the cfg each time and just have
+    the cache invalidated by autocmds
+- have a per-operation cache so that we don't compile the list of configloc more
+  than once per operation, and don't read each cfg more than once per operation
+- eventually - have a global in-memory cache of path -> configloc to ensure
+  opening configs via path is also snappy

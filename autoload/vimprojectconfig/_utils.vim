@@ -56,3 +56,41 @@ fun! vimprojectconfig#_utils#slugify(description)
 
   return l:slug
 endfun
+
+fun! vimprojectconfig#_utils#getProjectId(projectroot)
+  let l:dotgit = a:projectroot . '/.git'
+  if isdirectory(l:dotgit) || filereadable(l:dotgit)
+    return <SID>getGitProjectId(a:projectroot)
+  endif
+
+  " TODO: PC001: add support for detecting ID of other types of projects
+  return v:null
+endfun
+
+fun! vimprojectconfig#_utils#getConfigStoreDir(storename)
+  " Return the full path to the directory storing configs for the given
+  " storename.
+  " The directory will be created if it does not exist.
+  let l:dir = vimprojectconfig#_settings#getValidProjectStoreDir(a:storename)
+
+  call mkdir(l:dir, 'p')
+
+  if ! isdirectory(l:dir)
+    throw printf('ERROR: config dir %s is not a directory', l:dir)
+  endif
+
+  return l:dir
+endfun
+
+fun! <SID>getGitProjectId(reporoot)
+  " get the commit sha of the first commit in the repo - use that as the
+  " project id
+  " TODO: PC006: graceful error message when the git project has no commits
+  let l:sha = trim(system(['git', '-C', a:reporoot, 'log', '--reverse', '-1', '--format=%H']))
+  if v:shell_error
+    throw 'GIT ERROR: ' . l:sha
+  endif
+
+  " TODO: PC006: graceful error message when the command did not return a sha string
+  return len(l:sha) ? l:sha : v:null
+endfun

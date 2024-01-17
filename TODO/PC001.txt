@@ -1,0 +1,1 @@
+PC001 add support for getting project id other than via .git

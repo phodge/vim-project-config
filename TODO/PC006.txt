@@ -1,1 +1,1 @@
-PC006: ensure good error messages for common failure scenarios
+PC006: ensure good error messages for common failure scenarios, make sure these are unit tested
