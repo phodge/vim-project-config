@@ -1,0 +1,1 @@
+PC026 add test to ensure config hot reload works for any buffer under the projectconfig dir root path

@@ -15,7 +15,7 @@ fun! <SID>getAllConfigs()
       if l:entry !~ '^\.' && isdirectory(l:configdir)
         " TODO: PC004: initscript may be "project.lua"
         let l:initscript = 'project.vim'
-        call add(l:return, <SID>createConfigLocInstance(l:storename, l:entry, l:configdir, l:initscript))
+        call add(l:return, vimprojectconfig#_configs#createConfigLocInstance(l:storename, l:entry, l:configdir, l:initscript))
       endif
     endfor
   endfor
@@ -23,12 +23,17 @@ fun! <SID>getAllConfigs()
   return l:return
 endfun
 
-fun! vimprojectconfig#_configs#getCfgForBuffer(bufnr)
-  " Returns the cfg for the given buffer, or v:null if there is no matching
-  " config
+fun! vimprojectconfig#_configs#getCfgForBuffer(bufnr, reportfail)
+  " Returns a list of [cfg, projectroot, projectid] for the given buffer
+  " Any of cfg, projectroot or projetid may be v:null
 
   " 1. Determine the project root dir for the buffer
-  let l:projectroot = vimprojectconfig#_utils#getRootDir(a:bufnr)
+  let l:projectroot = vimprojectconfig#_utils#getRootDir(a:bufnr, a:reportfail)
+
+  if l:projectroot is v:null
+    " abort - we could not learn the buffer's projectroot so can't continue
+    return [v:null, v:null, v:null]
+  endif
 
   " 2. [Maybe] Determine the ID of the project
   let l:projectid = vimprojectconfig#_utils#getProjectId(l:projectroot)
@@ -39,12 +44,13 @@ fun! vimprojectconfig#_configs#getCfgForBuffer(bufnr)
     let l:cfg = vimprojectconfig#_configs#getCfgFromProjectId(l:projectid)
 
     if l:cfg isnot v:null
-      return l:cfg
+      return [l:cfg, l:projectid, l:projectroot]
     endif
   endif
 
   " 3. [Fallback] map a raw path to an existing project
-  return vimprojectconfig#_configs#getCfgFromProjectRootPath(l:projectroot)
+  let l:cfg = vimprojectconfig#_configs#getCfgFromProjectRootPath(l:projectroot)
+  return [l:cfg, l:projectid, l:projectroot]
 endfun
 
 fun! vimprojectconfig#_configs#getCfgFromProjectId(projectid)
@@ -73,12 +79,13 @@ endfun
 fun! vimprojectconfig#_configs#createEmptyCfg(projectid, projectroot, description, slug, storename)
   " Create an empty config with the given parameters, return a cfg object
 
-  let l:configloc = <SID>createConfigLocInstance(
+  " TODO: PC004: initscript may be 'project.lua'
+  let l:initscript = 'project.vim'
+  let l:configloc = vimprojectconfig#_configs#createConfigLocInstance(
         \ a:storename,
         \ a:slug,
         \ vimprojectconfig#_utils#getConfigStoreDir(a:storename) . '/' . a:slug,
-        \ " TODO: PC004: initscript may be 'project.lua'
-        \ 'project.vim',
+        \ l:initscript,
         \ )
 
   " create the folder
@@ -101,16 +108,56 @@ fun! vimprojectconfig#_configs#createEmptyCfg(projectid, projectroot, descriptio
     let l:paths = [a:projectroot]
   endif
 
+  " TODO: PC010: provide a better file template and document the possible
+  " methods in README.md
   call add(l:header, '')
   call add(l:header, '" TODO: place your project init commands here')
 
-  call writefile(l:header, l:conficloc.initpath)
+  " TODO: PC011: PC006: bail out if the project.vim file already exists and has a different
+  " description or project id
+
+  call writefile(l:header, l:configloc.initpath)
 
   return <SID>createConfigInstance(l:configloc, a:description, a:projectid, l:paths)
 endfun
 
+fun! vimprojectconfig#_configs#getBufferNumbersAssociatedWithConfig(configloc)
+  let l:cfg = <SID>readExistingCfg(a:configloc)
+  if l:cfg.project_id isnot v:null
+    return <SID>getBuffersByProjectId(l:cfg.project_id)
+  endif
+
+  return <SID>getBufferNumbersByProjectPaths(l:cfg.paths)
+endfun
+
+fun! <SID>getBufferNumbersByProjectPaths(projectpaths)
+  " TODO: PC003: implement this
+  let l:buffers = []
+  for l:bufnr in range(1, bufnr('$'))
+  endfor
+  return l:buffers
+endfun
+
+fun! <SID>getBuffersByProjectId(projectid)
+  " TODO: PC020: ensure this is all optimized/performant
+  let l:buffers = []
+  for l:bufnr in range(1, bufnr('$'))
+    let l:buf_projectroot = vimprojectconfig#_utils#getRootDir(l:bufnr, v:false)
+    if l:buf_projectroot is v:null
+      " skip buffers where we can't determine the project root
+      continue
+    endif
+    let l:buf_projectid = vimprojectconfig#_utils#getProjectId(l:buf_projectroot)
+    if l:buf_projectid isnot v:null && l:buf_projectid == a:projectid
+      call add(l:buffers, l:bufnr)
+    endif
+  endfor
+  return l:buffers
+endfun
+
 fun! <SID>readExistingCfg(configloc)
   let l:description = v:null
+  let l:projectid = v:null
   let l:paths = []
 
   let l:head = readfile(a:configloc.initpath, '', 50)
@@ -127,7 +174,7 @@ fun! <SID>readExistingCfg(configloc)
 
     if l:state == 'expect_fields'
       if l:line =~ '^"\s*ProjectID:\s*'
-        let l:project_id = substitute(l:line, '^"\s*ProjectID:\s*', '', '')
+        let l:projectid = substitute(l:line, '^"\s*ProjectID:\s*', '', '')
         continue
       elseif l:line =~ '^"\s*Recognised Paths:$'
         let l:state = 'expect_paths'
@@ -153,7 +200,7 @@ fun! <SID>readExistingCfg(configloc)
   return <SID>createConfigInstance(a:configloc, l:description, l:projectid, l:paths)
 endfun
 
-fun! <SID>createConfigLocInstance(storename, slug, dirpath, initscript)
+fun! vimprojectconfig#_configs#createConfigLocInstance(storename, slug, dirpath, initscript)
   let l:instance = {}
 
   let l:instance.storename = a:storename
@@ -161,8 +208,28 @@ fun! <SID>createConfigLocInstance(storename, slug, dirpath, initscript)
   let l:instance.dirpath = a:dirpath
   let l:instance.initpath = a:dirpath . '/' . a:initscript
   let l:instance.initscript = a:initscript
+  let l:instance.cfgkey = a:dirpath
+  let l:instance.serialize = function("<SID>configLocSerialize")
+  let l:instance._serialized = v:null
 
   return l:instance
+endfun
+
+fun! <SID>configLocSerialize() dict
+  if self._serialized is v:null
+    let self._serialized = printf(
+          \ 'vimprojectconfig#_configs#createConfigLocInstance(%s, %s, %s, %s)',
+          \ <SID>safeStr(self.storename),
+          \ <SID>safeStr(self.slug),
+          \ <SID>safeStr(self.dirpath),
+          \ <SID>safeStr(self.initscript),
+          \ )
+  endif
+  return self._serialized
+endfun
+
+fun! <SID>safeStr(val)
+  return "'" . substitute(a:val, "'", "''", 'g') . "'"
 endfun
 
 fun! <SID>createConfigInstance(configloc, description, projectid, paths)

@@ -1,0 +1,1 @@
+PC024 allow configuring different kinds of :split to use when opening config file

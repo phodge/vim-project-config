@@ -1,0 +1,1 @@
+PC011 graceful handling of project.vim already existing somehow

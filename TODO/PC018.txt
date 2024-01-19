@@ -1,0 +1,6 @@
+PC018: document what we do with "config state" when reloading PRIORITY
+
+- just allow the project.vim functions to dump anything into self?
+- how do we "reserve" names so that we can add new hooks in the future without conficts?
+- if we're providing a different value for 'self' then how can users implement
+  private helper functions within their project.vim scripts?

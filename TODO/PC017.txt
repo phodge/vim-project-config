@@ -1,0 +1,9 @@
+PC017 work out what handlers we need and document them PRIORITY
+
+- do we need a "project unload" handler?
+- should we have handlers based on autocmd event names, or something more
+  general that we can be flexible with in the future?
+- can we please come up with some user stories / common scenarios and document
+  them as examples because that is the whole point of this plugin
+- work out whether the plugin *actually* needs to be loaded ahead of all others
+  as per README notice?

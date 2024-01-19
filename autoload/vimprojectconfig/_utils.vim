@@ -1,7 +1,14 @@
-fun! vimprojectconfig#_utils#getRootDir(bufnr)
+fun! vimprojectconfig#_utils#getRootDir(bufnr, reportfail)
   " returns the project root for the nominated buffer, or v:null if it could
   " not be discovered
   " TODO: this should have unit tests
+
+  " TODO: PC012 PC006: report a helpful error message when a:reportfail is
+  " true and we have to return v:null because we couldn't determine a project
+  " root for the current buffer
+
+  " TODO: PC013 PC006: work out whether we need to do anything special with symlinks
+  " TODO: PC014: what if get_project_root isn't a callable?
 
   let l:fn = get(g:vimprojectconfig#usersettings, 'get_project_root', v:null)
   if l:fn is v:null
@@ -18,6 +25,10 @@ fun! vimprojectconfig#_utils#getRootDir(bufnr)
     " TODO: PC006: unit test this code path and ensure a nice error message
     throw 'ERROR: get_project_root handler did not return a string'
   endif
+
+  " TODO: PC006: can we check whether we got a valid path back?
+  " TODO: PC006: can we check whether the returned path is a parent of the
+  " buffer's path?
 
   return l:result == '' ? v:null : l:result
 endfun
@@ -73,9 +84,12 @@ fun! vimprojectconfig#_utils#getConfigStoreDir(storename)
   " The directory will be created if it does not exist.
   let l:dir = vimprojectconfig#_settings#getValidProjectStoreDir(a:storename)
 
+  " TODO: PC006: should we instead add try/catch around this to give a better
+  " error when the folder can't be creatd?
   call mkdir(l:dir, 'p')
 
   if ! isdirectory(l:dir)
+    " TODO: PC006: add E2E tests ensuring this error messages is always helpful/nice
     throw printf('ERROR: config dir %s is not a directory', l:dir)
   endif
 

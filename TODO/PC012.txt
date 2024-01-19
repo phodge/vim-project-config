@@ -1,0 +1,5 @@
+PC012 graceful handling when we can't determine project root for a buffer
+
+Do we want to try and be intelligent about things like :Sexplor buffers, fugitive:// buffers, http/ftp/sftp etc?
+
+What about terminal windows?

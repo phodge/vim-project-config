@@ -1,0 +1,3 @@
+PC010 provide a helpful project.vim template
+
+- requires PC017

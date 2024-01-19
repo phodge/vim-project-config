@@ -1,0 +1,3 @@
+PC014 gracefully handle when settings.get_project_root() isn't a callable
+
+Both in _utils where we call it, and in #initialise()

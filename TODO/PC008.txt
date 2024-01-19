@@ -1,0 +1,18 @@
+PC008 optimised dispatching for project config
+
+It seems there are two approaches:
+
+A) set up all autocmds on plugin initial load, then each autocmd always looks
+for project hooks to call
+
+B) the autocmds are created on an as-needed basis only for the buffers that
+need them (as specifically as possible), once on startup, and then again each
+time the project-config file(s) are written.
+
+Advantage of (A):
+- simple to implement
+
+Advantages of (B):
+- don't have to read/process so many files on each autocmd (even if you have no
+  project configs using a particular hook, we'd still burn CPU cycles looking
+  for them for approach (A))

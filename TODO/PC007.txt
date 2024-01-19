@@ -1,0 +1,4 @@
+PC007 robust support for get_project_root
+
+- add E2E tests
+- validate that whatever is supplied to #initialise() is a callable
