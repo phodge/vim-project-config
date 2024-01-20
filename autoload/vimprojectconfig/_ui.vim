@@ -48,34 +48,51 @@ fun! <SID>createEmptyProjectConfig(projectid, projectroot)
 endfun
 
 fun! <SID>prompt(label, default, minlength)
-  while v:true
-    " keep going until aborted or valid input
-    let l:value = input({'prompt': a:label, 'default': a:default})
-    if l:value == ''
-      " aborted
-      return v:null
-    elseif len(l:value) >= a:minlength
-      return l:value
-    endif
+  let g:vimprojectconfig#__debug_prompt_label = a:label
+  let g:vimprojectconfig#__debug_prompt_default = a:default
+  try
+    while v:true
+      " keep going until aborted or valid input
+      let l:value = input({'prompt': a:label, 'default': a:default})
+      if l:value == ''
+        " aborted
+        return v:null
+      elseif len(l:value) >= a:minlength
+        return l:value
+      endif
 
-    echohl WarningMsg
-    echo printf('Answer must be at least %s characters', a:minlength)
-    echohl None
-  endwhile
+      echohl WarningMsg
+      echo printf('Answer must be at least %s characters', a:minlength)
+      echohl None
+    endwhile
+  finally
+    unlet g:vimprojectconfig#__debug_prompt_label
+    unlet g:vimprojectconfig#__debug_prompt_default
+  endtry
 endfun
 
 fun! <SID>choose(choices)
-  let l:choices = []
-  for l:label in a:choices
-    call add(l:choices, printf('%s) %s', len(l:choices) + 1, l:label))
-  endfor
+  let g:vimprojectconfig#__debug_choices = a:choices
+  try
+    let l:choices = []
+    for l:label in a:choices
+      call add(l:choices, printf('%s) %s', len(l:choices) + 1, l:label))
+    endfor
 
-  while v:true
-    " keep going until aborted or valid choice
-    let l:choice = inputlist(l:choices)
+    while v:true
+      " keep going until aborted or valid choice
+      if len($VIM_PROJECT_CONFIG_UNIT_TESTING)
+        " required for headless unit tests - inputlist() exits early
+        let l:choice = nr2char(getchar())
+      else
+        let l:choice = inputlist(l:choices)
+      endif
 
-    if l:choice >= 0 && l:choice <= len(a:choices)
-      return l:choice
-    endif
-  endwhile
+      if l:choice >= 0 && l:choice <= len(a:choices)
+        return l:choice
+      endif
+    endwhile
+  finally
+    unlet g:vimprojectconfig#__debug_choices
+  endtry
 endfun

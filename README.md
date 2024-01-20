@@ -239,9 +239,20 @@ TODO: PC027: document API here?
 
 ### Running Unit Tests
 
-Unit tests require a recent version of python and the
-[poetry](https://python-poetry.org/) package manager. You will also need to
-install the minimum supported versions of vim and neovim.
+End-to-End tests are located under tests/e2e. They should test major workflows
+and ensure the various units are connected together correctly.
+
+Unit tests are located under tests/unit/ and are to perform in-depth testing of
+individual components. This is the preferred way to test that specialised
+features are working.
+
+Executing tests requires a recent version of python and the
+[poetry](https://python-poetry.org/) package manager.
+<!--
+TODO: PC028: describe vim/neovim execution dependencies You will also need to
+install the minimum supported versions of vim and neovim, and vim will need the
++clientserver feature.
+-->
 
 Run these commands to run the whole test suite
 
