@@ -174,6 +174,34 @@ personal projects stored separately from work projects.
         \ },
         \ })
 
+<!--
+TODO: PC004: add these options also:
+**init_scripts**
+
+Optional. Defaults to `["project.lua", "project.vim"]`.
+
+
+**default_init_script**
+
+Optional. If set, must be one of the file names from **init_scripts**. Specifies the name of the
+init script to use for new project configs so that you aren't prompted to choose for every project.
+-->
+
+<!--
+TODO: PC027: document API here?
+### Other API Features
+
+`projectconfig#getProjectConfigPath(projectfile)`
+
+    Returns the path for the project config script that would be opened by `:ProjectConfigEdit` for
+    the specified buffer, or `v:null` if it does not exist.
+
+`projectconfig#getProjectConfigDir(projectfile)`
+
+    Returns the path for folder containing the project config script that would be opened by
+    `:ProjectConfigEdit`, or `v:null` if no project config exists for that project.
+-->
+
 
 ## Alternative Solutions
 
