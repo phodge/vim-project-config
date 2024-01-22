@@ -1,0 +1,5 @@
+PC030 robust testing for getGitProjectId()
+
+- include testing for a repo that has multiple "initial" commits
+- include regression test for catching that "git log --reverse -1" does not work
+

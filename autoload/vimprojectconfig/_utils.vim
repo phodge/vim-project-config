@@ -100,7 +100,9 @@ fun! <SID>getGitProjectId(reporoot)
   " get the commit sha of the first commit in the repo - use that as the
   " project id
   " TODO: PC006: graceful error message when the git project has no commits
-  let l:sha = trim(system(['git', '-C', a:reporoot, 'log', '--reverse', '-1', '--format=%H']))
+  " TODO: PC030: handle repos with multiple initial commits
+  let l:checkcmd = ['git', '-C', a:reporoot, 'rev-list', '--max-parents=0', 'HEAD']
+  let l:sha = trim(system(l:checkcmd))
   if v:shell_error
     throw 'GIT ERROR: ' . l:sha
   endif
