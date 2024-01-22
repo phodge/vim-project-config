@@ -21,7 +21,7 @@ def test_creating_new_git_based_project(ieditor, git_repo_a):
     # will be prompted for a descriptive name, should suggest the parent folder
     # name
     ieditor.handle_prompt(
-        'name for the project',
+        'title for the project',
         suggested=git_repo_a.path.name,
         answer='My cool project',
         wait=True,
