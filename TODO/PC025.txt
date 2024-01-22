@@ -2,3 +2,4 @@ PC025 add E2E test(s) to ensure project config dispatching is working correctly 
 
 - opening buffers in various ways?
 - making sure only the correct config is loaded?
+- make sure two clones of the same repo both have the same project id

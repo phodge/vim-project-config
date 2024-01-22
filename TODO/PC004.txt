@@ -1,1 +1,1 @@
-PC004 add support for lua init scripts
+PC004 add support for lua init scripts PRIORITY

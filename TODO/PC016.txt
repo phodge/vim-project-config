@@ -1,3 +1,4 @@
 PC016 for a buffer that doesn't have a projectid, allow choosing to associate it with an existing project
 
 - requires PC005
+- should only be prompted to choose from existing projects that do not have an ID

@@ -4,3 +4,4 @@ PC018: document what we do with "config state" when reloading PRIORITY
 - how do we "reserve" names so that we can add new hooks in the future without conficts?
 - if we're providing a different value for 'self' then how can users implement
   private helper functions within their project.vim scripts?
+- make sure we add a unit test or E2E test to guarantee that this is working

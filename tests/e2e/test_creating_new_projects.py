@@ -31,6 +31,13 @@ def test_creating_new_git_based_project(ieditor, git_repo_a):
 
     assert ieditor.get_buf_contents().startswith('" Project: My cool project')
 
+    # TODO: PC032: confirm that the project config files don't yet exist
+    if False:
+        assert ieditor.get_bool_option('l:modified')
+        cfgpath = Path(ieditor.get_buf_name())
+        assert not cfgpath.exists()
+        assert not cfgpath.parent.exists()
+
     # add some project settings such that the README buffer will get a
     # buffer-local variable
     ieditor.append_lines(
@@ -52,3 +59,10 @@ def test_creating_new_git_based_project(ieditor, git_repo_a):
     import time
     time.sleep(0.1)
     assert ieditor.get_expr_str('b:test_flag') == 'success'
+
+
+def test_creating_path_based_project():
+    # TODO: PC005: implement this test
+    # will be prompted for a descriptive name
+    # - should suggest the folder name
+    pass

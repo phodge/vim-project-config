@@ -1,0 +1,7 @@
+PC033 allow for a "Default" project that is loaded for all other buffers
+
+- probably requires PC017 so that I can decide whether this is really necessary
+- this allows me, for example, to always have my Python LSP config in project
+  configs, and it gets configured one way or the other.
+- TODO: is this really necessary? Couldn't I just set a buffer-local variable
+  that controls this per-project?

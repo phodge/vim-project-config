@@ -1,0 +1,1 @@
+PC032 when using #edit() to create a new config, the project.vim and containing folder should not exist until the buffer is saved
