@@ -1,13 +1,16 @@
 fun! vimprojectconfig#_utils#getRootDir(bufnr, reportfail)
   " returns the project root for the nominated buffer, or v:null if it could
   " not be discovered
+
+  " Note that this plugin doesn't do anything special in terms of symlinks
+  " TODO: PC013 PC006: add unit tests for symlink behaviour
+
   " TODO: this should have unit tests
 
   " TODO: PC012 PC006: report a helpful error message when a:reportfail is
   " true and we have to return v:null because we couldn't determine a project
   " root for the current buffer
 
-  " TODO: PC013 PC006: work out whether we need to do anything special with symlinks
   " TODO: PC014: what if get_project_root isn't a callable?
 
   let l:fn = get(g:vimprojectconfig#usersettings, 'get_project_root', v:null)

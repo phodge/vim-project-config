@@ -1,1 +1,3 @@
-PC013 document what we do in terms of symlinks and project root paths PRIORITY
+PC013 add unit tests for symlink behaviour
+
+- If you ~/ProjectA/file-a.txt and you add a symlink to it in ~/ProjectB/file-b.txt, then when you edit the file-b.txt symlink it should appear to be in ~/ProjectB instead of ~/ProjectA.
