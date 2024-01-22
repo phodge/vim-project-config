@@ -1,0 +1,5 @@
+PC029 more robust builtin project root getter
+
+- add unit tests
+- in particular, want to work out why we didn't realize this wouldn't work:
+  let l:fullpath = expand(bufname(a:bufnr), ':p')

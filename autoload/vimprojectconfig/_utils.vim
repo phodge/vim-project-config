@@ -34,8 +34,8 @@ fun! vimprojectconfig#_utils#getRootDir(bufnr, reportfail)
 endfun
 
 fun! <SID>getGitProjectRoot(bufnr)
-  " TODO: this should have unit tests
-  let l:fullpath = expand(bufname(a:bufnr), ':p')
+  " TODO: PC029: add unit tests for this
+  let l:fullpath = fnamemodify(bufname(a:bufnr), ':p')
   let l:last = ''
   while len(l:fullpath) > 3 && l:fullpath != l:last
 
