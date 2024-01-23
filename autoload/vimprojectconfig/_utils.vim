@@ -1,3 +1,6 @@
+let s:root_dir_cache = {}
+let s:project_id_cache = {}
+
 fun! vimprojectconfig#_utils#getRootDir(bufnr, reportfail)
   " returns the project root for the nominated buffer, or v:null if it could
   " not be discovered
@@ -7,17 +10,34 @@ fun! vimprojectconfig#_utils#getRootDir(bufnr, reportfail)
 
   " TODO: this should have unit tests
 
-  " TODO: PC012 PC006: report a helpful error message when a:reportfail is
-  " true and we have to return v:null because we couldn't determine a project
-  " root for the current buffer
+  if has_key(s:root_dir_cache, a:bufnr)
+    return s:root_dir_cache[a:bufnr]
+  endif
 
-  " TODO: PC014: what if get_project_root isn't a callable?
+  let l:root_dir = <SID>getBufferRootDir(a:bufnr)
 
+  " store in cache
+  let s:root_dir_cache[a:bufnr] = l:root_dir
+
+  if l:root_dir is v:null
+    if a:reportfail
+      " TODO: PC012 PC006: report a helpful error message when a:reportfail is
+      " true and we have to return v:null because we couldn't determine a
+      " project root for the current buffer
+    endif
+  endif
+
+  return l:root_dir
+endfun
+
+fun! <SID>getBufferRootDir(bufnr)
   let l:fn = get(g:vimprojectconfig#usersettings, 'get_project_root', v:null)
   if l:fn is v:null
     " fall back to our internal handler
     return <SID>getGitProjectRoot(a:bufnr)
   endif
+
+  " TODO: PC014: what if get_project_root isn't a callable?
 
   let l:result = call(l:fn, [a:bufnr])
   if l:result is v:null
@@ -72,13 +92,20 @@ fun! vimprojectconfig#_utils#slugify(description)
 endfun
 
 fun! vimprojectconfig#_utils#getProjectId(projectroot)
-  let l:dotgit = a:projectroot . '/.git'
-  if isdirectory(l:dotgit) || filereadable(l:dotgit)
-    return <SID>getGitProjectId(a:projectroot)
+  if has_key(s:project_id_cache, a:projectroot)
+    return s:project_id_cache[a:projectroot]
   endif
 
-  " TODO: PC001: add support for detecting ID of other types of projects
-  return v:null
+  let l:dotgit = a:projectroot . '/.git'
+  if isdirectory(l:dotgit) || filereadable(l:dotgit)
+    let l:projectid = <SID>getGitProjectId(a:projectroot)
+  else
+    " TODO: PC001: add support for detecting ID of other types of projects
+    let l:projectid = v:null
+  endif
+
+  let s:project_id_cache[a:projectroot] = l:projectid
+  return l:projectid
 endfun
 
 fun! vimprojectconfig#_utils#getConfigStoreDir(storename)

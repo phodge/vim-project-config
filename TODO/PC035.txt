@@ -1,0 +1,10 @@
+PC035 improved projectroot/projectid caching
+
+Current caching implementation suffers from the following drawbacks:
+- doesn't persist after quitting vim, so you need to run the expensive `git
+  rev-list --max-parents=0 HEAD` on every neovim startup
+- cache doesn't invalidate when #initalise() is re-run
+- cache doesn't invalidate when project.vim files are modified
+- cache just ... doesn't invalidate
+- need to have a manual mechanism to invalidate the cache
+- need to have some unit tests and/or E2E tests for caching
