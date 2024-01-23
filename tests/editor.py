@@ -286,10 +286,10 @@ class NeoVim(Editor):
     Vim.pytest_param,
     NeoVim.pytest_param,
 ])
-def editor(request):
+def editor(request, tmpdir):
     """A fixture that provides Vim and NeoVim as separate params."""
     class_ = request.param
-    instance = class_()
+    instance = class_(tmpdir)
     try:
         yield instance
     finally:
