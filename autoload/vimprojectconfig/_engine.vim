@@ -23,7 +23,7 @@ fun! vimprojectconfig#_engine#dispatch(eventname)
     " we have something else?
     " Also should this then be using s:config_state[l:cfg.configloc.cfgkey] as
     " the 3rd arg?
-    exe call(l:Hook, [], s:config_state)
+    call call(l:Hook, [], s:config_state)
   endif
 endfun
 
