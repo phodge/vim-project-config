@@ -1,4 +1,1 @@
-PC015: config reloading for buffers not on the current tab page PRIORITY
-
-- probably need to set up a self-destructing BufWinEnter autocmd for each other
-  buffer to reload its config
+PC015: E2E test for config reloading for buffers not on the current tab page

@@ -19,10 +19,13 @@ fun! vimprojectconfig#initialise(usersettings)
   let l:settings.get_project_root = get(a:usersettings, 'get_project_root', v:null)
 endfun
 
+" create au groups
+aug VimProjectConfig | aug end
+aug VimProjectConfigReloadTriggers | aug end
+
 " reset any existing autocmds
-aug VimProjectConfig
-au!
-aug end
+au! VimProjectConfig
+au! VimProjectConfigReloadTriggers
 
 " TODO: PC025: add E2E tests for this core part of the plugin
 " PC008 provide more efficient hooks

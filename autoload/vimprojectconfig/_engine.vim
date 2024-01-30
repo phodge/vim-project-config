@@ -74,10 +74,11 @@ fun! vimprojectconfig#_engine#configWasUpdated(configloc)
     exe 'wincmd' l:oldwin 'w'
   endtry
 
-  if len(l:buffernumbers)
-    " TODO: PC015: reload configs for other buffers somehow
-    throw 'NOT IMPLEMENTED: install autocmds for other buffers to refresh their configs'
-  endif
+  let l:reload_cmd = 'call vimprojectconfig#_engine#dispatch("BufEnter")'
+  for l:bufnr in keys(l:buffernumbers)
+    " TODO: PC015: add an E2E test to ensure this works
+    exe printf('au! VimProjectConfigReloadTriggers WinEnter <buffer=%s> ++once nested %s', l:bufnr, l:reload_cmd)
+  endfor
 endfun
 
 fun! <SID>loadOrReloadConfig(cfg)

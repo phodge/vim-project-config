@@ -142,6 +142,10 @@ fun! <SID>getBuffersByProjectId(projectid)
   " TODO: PC020: ensure this is all optimized/performant
   let l:buffers = []
   for l:bufnr in range(1, bufnr('$'))
+    if ! bufexists(l:bufnr)
+      continue
+    endif
+
     let l:buf_projectroot = vimprojectconfig#_utils#getRootDir(l:bufnr, v:false)
     if l:buf_projectroot is v:null
       " skip buffers where we can't determine the project root
