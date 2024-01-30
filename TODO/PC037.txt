@@ -1,0 +1,1 @@
+PC037 graceful handling when there is a project config dir with no project.vim in it
