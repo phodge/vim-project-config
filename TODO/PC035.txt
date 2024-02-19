@@ -8,3 +8,7 @@ Current caching implementation suffers from the following drawbacks:
 - cache just ... doesn't invalidate
 - need to have a manual mechanism to invalidate the cache
 - need to have some unit tests and/or E2E tests for caching
+- cache path doesn't make sense for vim
+- cache path can't be customised
+- a bad cache file needs to be deleted
+- cache items need an expiry time
