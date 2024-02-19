@@ -127,6 +127,12 @@ fun! vimprojectconfig#_utils#getConfigStoreDir(storename)
 endfun
 
 fun! <SID>getGitProjectId(reporoot)
+  let l:cachekey = 'git-project-id-by-path|' . a:reporoot
+  let l:cached = vimprojectconfig#_cache#get(l:cachekey, '__not_set__')
+  if l:cached != '__not_set__'
+    return l:cached
+  endif
+
   " get the commit sha of the first commit in the repo - use that as the
   " project id
   " TODO: PC006: graceful error message when the git project has no commits
@@ -138,5 +144,7 @@ fun! <SID>getGitProjectId(reporoot)
   endif
 
   " TODO: PC006: graceful error message when the command did not return a sha string
-  return len(l:sha) ? l:sha : v:null
+  let l:projectid = len(l:sha) ? l:sha : v:null
+  call vimprojectconfig#_cache#set(l:cachekey, l:projectid)
+  return l:projectid
 endfun
