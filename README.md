@@ -61,13 +61,20 @@ TODO: PC022: implement project_config_dirs other than 'Personal'
 This will create a blank project config script for the project, or edit the existing config script
 if it already exists.
 
+### Vimscript
+
+If you are using vimscript, you can use the following template:
+
+    fun! projectconfig.api2024.filetypeDetect(bufnr, ext, basename, relname) dict
+        if 0 && a:ext == 'txt'
+            return 'markdown'
+        endif
+    endfun
+
+
 <!--
 
 TODO: PC017: document what the handlers are
-
-### Vimscript
-
-If you are using vimscript, you should use the following template:
 
 
     " project.vim - My cool project
@@ -135,6 +142,8 @@ If you are using Lua, you should use the following template:
     endfun
 
 -->
+
+More examples can be found in [examples.md](docs/examples.md).
 
 
 ### Automatic Reload

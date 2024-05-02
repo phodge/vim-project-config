@@ -11,6 +11,24 @@ fun! vimprojectconfig#_engine#dispatch(eventname)
   " load the config if it isn't already loaded
   call <SID>loadOrReloadConfig(l:cfg)
 
+  if a:eventname == 'internal_filetype_override'
+    let l:state = s:config_state[l:cfg.configloc.cfgkey]
+    let l:Hook = get(l:state, a:eventname, v:null)
+    if l:Hook isnot v:null
+      let l:hook_args = [
+            \ expand('<abuf>'),
+            \ expand('<afile>:e'),
+            \ expand('<afile>:t'),
+            \ expand('<afile>:p'),
+            \ ]
+      let l:new_ft = call(l:Hook, l:hook_args, l:state.data)
+      if type(l:new_ft) == type("") && strlen(l:new_ft)
+        exe 'set filetype=' . l:new_ft
+      endif
+    endif
+    return
+  endif
+
   if a:eventname == 'BufEnter'
     let l:state = s:config_state[l:cfg.configloc.cfgkey]
     let l:Hook = get(l:state, a:eventname, v:null)
@@ -105,7 +123,22 @@ fun! <SID>loadOrReloadConfig(cfg)
   try
     " TODO: PC018: should we be passing state object each time?
     let g:projectconfig = l:state
+
+    " add 'api2024' dict item to support filetype override API
+    let g:projectconfig.api2024 = {}
+
     exe 'source' a:cfg.configloc.initpath
+
+    let l:Ftoverride = get(g:projectconfig.api2024, 'filetypeDetect', v:null)
+
+    if l:Ftoverride isnot v:null
+      " TODO: add the filetypeDetect callback for this project
+      let g:projectconfig.internal_filetype_override = l:Ftoverride
+    else
+      let g:projectconfig.internal_filetype_override = v:null
+    endif
+
+    call remove(g:projectconfig, 'api2024')
 
     " TODO: PC017: work out what hooks/handlers we should be looking for
     " TODO: PC019: verify entries of g:projectconfig that we might expect to

@@ -1,0 +1,3 @@
+PC039 filetype overrides for Vim
+
+Vim doesn't support vim.filetype.add() so we need to implement using old-fashioned autocmds as per docs/filetype-detection.md
