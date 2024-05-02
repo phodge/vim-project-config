@@ -12,19 +12,20 @@ fun! vimprojectconfig#_engine#dispatch(eventname)
   call <SID>loadOrReloadConfig(l:cfg)
 
   if a:eventname == 'BufEnter'
-    let l:Hook = get(s:config_state[l:cfg.configloc.cfgkey], a:eventname, v:null)
-  else
-    throw print('ERROR: unexpected hook "%s"', a:eventname)
+    let l:state = s:config_state[l:cfg.configloc.cfgkey]
+    let l:Hook = get(l:state, a:eventname, v:null)
+    if l:Hook isnot v:null
+      " execute the hook already!
+      " TODO: PC018: should we be calling with the main config_state or should
+      " we have something else?
+      " Also should this then be using s:config_state[l:cfg.configloc.cfgkey] as
+      " the 3rd arg?
+      call call(l:Hook, [], l:state.data)
+    endif
+    return
   endif
 
-  if l:Hook isnot v:null
-    " execute the hook already!
-    " TODO: PC018: should we be calling with the main config_state or should
-    " we have something else?
-    " Also should this then be using s:config_state[l:cfg.configloc.cfgkey] as
-    " the 3rd arg?
-    call call(l:Hook, [], s:config_state)
-  endif
+  throw printf('ERROR: unexpected hook "%s"', a:eventname)
 endfun
 
 fun! <SID>thisConfigNeedsReload(configloc)
@@ -94,7 +95,7 @@ fun! <SID>loadOrReloadConfig(cfg)
   endif
 
   " TODO: PC018: should we reset the state object each time?
-  let l:state = {}
+  let l:state = {"data": {}}
 
   " copy by ref, so updating l:state will add things to the state for that
   " script
