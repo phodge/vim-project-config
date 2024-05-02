@@ -71,7 +71,7 @@ class Editor:
 
 class Vim(Editor):
     executable = 'vim'
-    skipreason = "NeoVim not found"
+    skipreason = "Vim not found"
 
 
 class NeoVim(Editor):
