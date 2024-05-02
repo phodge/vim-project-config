@@ -33,14 +33,19 @@ class Editor:
     def launch_cmd(self):
         raise NotImplementedError(f"{self.__class__.__name__} does not implement .launch_cmd")
 
-    def launch(self, cwd: Path):
+    def launch(self, cwd: Path, targetfile: Path | None = None) -> None:
         assert self._p is None
         assert self._cwd is None
         self._cwd = cwd
 
         env = {**dict(os.environ), 'VIM_PROJECT_CONFIG_UNIT_TESTING': '1'}
         cmd = self.launch_cmd
+        if targetfile:
+            cmd.append(str(targetfile))
         self._p = subprocess.Popen(cmd, cwd=cwd, env=env)
+
+    def quit(self):
+        raise NotImplementedError(f"{self.__class__.__name__} does not implement .quit()")
 
     def cleanup(self):
         try:
@@ -99,10 +104,10 @@ class NeoVim(Editor):
             '--listen', str(self._address),
         ]
 
-    def launch(self, cwd: Path):
+    def launch(self, cwd: Path, targetfile: Path | None = None) -> None:
         self._address = cwd / 'neovim.sock'
         assert not self._address.exists()
-        super().launch(cwd)
+        super().launch(cwd, targetfile)
 
         # give time for the socket to appear
         start = time.time()
@@ -120,19 +125,28 @@ class NeoVim(Editor):
         # send a command to neovim to open a file
         self._remote_command(f'edit {str(what)}')
 
+    def quitall(self, bang: bool = True):
+        self._remote_command('quitall' + ('!' if bang else ''), allowexit2=True)
+        self.cleanup()
+
     def command(self, cmd: str):
         self._remote_command(cmd)
 
     def command_start(self, cmd: str):
         self._remote_command_start(cmd)
 
-    def _remote_command(self, command):
+    def _remote_command(self, command: str, *, allowexit2: bool = False):
         assert self._address is not None
-        subprocess.run([
+        result = subprocess.run([
             self.executable,
             '--server', str(self._address),
             '--remote-expr', f"execute('{command}')",
-        ], check=True)
+        ], check=not allowexit2)
+        if allowexit2:
+            if result.returncode in (0, 2):
+                return
+
+            raise Exception(f"Sending remote command {command!r} failed with returncode {result.returncode}")
 
     def _remote_command_start(self, command):
         assert self._address is not None
