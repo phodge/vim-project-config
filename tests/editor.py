@@ -12,7 +12,7 @@ TESTS_DIR = Path(__file__).parent
 
 
 class Editor:
-    skipreason = None
+    skipreason: str | None = None
 
     _p = None
     _cwd = None
