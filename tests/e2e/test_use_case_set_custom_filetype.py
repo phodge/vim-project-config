@@ -70,3 +70,56 @@ class TestProjectConfigWithCustomFileTypes:
             ieditor.edit(pyfile)
             assert ieditor.get_expr_str('&filetype') == expected_filetype
         ieditor.quitall()
+
+    def test_split_to_new_project_file_after_launch(
+        self,
+        tmpdir,
+        ieditor,
+        file_pairs,
+    ):
+        """Custom filetypes work when starting a new buffer for that project"""
+        # start a new .py file in each repo, ensure that they each get the correct filetype
+        ieditor.launch(tmpdir, 'some_file.py')
+        assert ieditor.get_expr_str('&filetype') == 'python'  # a regular python file
+        for repo_root, _, expected_filetype in file_pairs:
+            ieditor.edit(repo_root / 'some_new_file.py')
+            assert ieditor.get_expr_str('&filetype') == expected_filetype
+        ieditor.quitall()
+
+    def test_new_project_file_gets_filetype_on_saveas(
+        self,
+        tmpdir,
+        ieditor,
+        git_repo_a,
+        git_repo_b,
+        git_repo_c,
+        file_pairs,
+    ):
+        """Custom filetypes work when a new unnamed buffer is saved into a project"""
+        # for each repo, start a new empty buffer, then use
+        # ":saveas something.py" to give it a filename
+        ieditor.launch(tmpdir, 'some_file.py')
+        assert ieditor.get_expr_str('&filetype') == 'python'  # a regular python file
+        for repo_root, _, expected_filetype in file_pairs:
+            ieditor.command('new')
+            assert ieditor.get_expr_str('&filetype') == ""
+            ieditor.command(f'saveas {repo_root}/an_awesome_new_file.py')
+            assert ieditor.get_expr_str('&filetype') == expected_filetype
+        ieditor.quitall()
+
+    def test_project_filetypes_against_other_filetype_autocmds(self):
+        """Test that a project filetype take precedence over hooks in other places that might set a filetype"""
+        # - autocmds in .vimrc
+        # - vim?
+        # - vim/after?
+        # - a plugin?
+        # - filetype.vim files
+        # - lua file (Neovim)?
+        # - lua callback function (Neovim)?
+        # TODO: PC042: implement this test
+        pass
+
+    def test_project_filetypes_with_filetype_off(self):
+        # TODO: PC042: how does our hook behave when ":filetype off" is used?
+        # (this destroys all filetypedetect autocommands)
+        pass
