@@ -1,0 +1,5 @@
+PC041 unit tests for filetypeDetect()
+
+- assert that filetypeDetect() provides correct values for all arguments (bufnr, ext, basename, relname)
+- assert that filetypeDetect() gets the state dict
+
