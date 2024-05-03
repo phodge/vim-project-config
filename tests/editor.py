@@ -160,10 +160,7 @@ class NeoVim(Editor):
         current_choices = choices_data.split('|')
 
         for nr, pattern in enumerate(choices):
-            try:
-                assert pattern in current_choices[nr], f"UI Choice {nr+1} did not contain text {pattern!r}"
-            except Exceptiona as e:
-                raise
+            assert pattern in current_choices[nr], f"UI Choice {nr+1} did not contain text {pattern!r}"
 
         self._send_chars(str(choose))
 
