@@ -23,8 +23,7 @@ class Editor:
         self._configs_dir = tmpdir / 'project-configs'
 
     @classmethod
-    @property
-    def pytest_param(class_):
+    def get_pytest_param(class_):
         marks = pytest.mark.skip(class_.skipreason) if class_.skipreason else []
         return pytest.param(class_, marks=marks)
 
@@ -88,21 +87,6 @@ class NeoVim(Editor):
             # become server listening at this address
             '--listen', str(self._address),
         ]
-
-    def __init__(self, tmpdir: Path):
-        super().__init__(tmpdir)
-
-        self._jobs = []
-
-    def cleanup(self):
-        for job in self._jobs:
-            try:
-                self._cleanup_subprocess(job)
-            except Exception:
-                pass
-        self._jobs = []
-
-        super().cleanup()
 
     def launch(self, cwd: Path):
         self._address = cwd / 'neovim.sock'
@@ -280,8 +264,8 @@ class NeoVim(Editor):
 
 
 @pytest.fixture(params=[
-    Vim.pytest_param,
-    NeoVim.pytest_param,
+    Vim.get_pytest_param(),
+    NeoVim.get_pytest_param(),
 ])
 def editor(request, tmpdir):
     """A fixture that provides Vim and NeoVim as separate params."""
