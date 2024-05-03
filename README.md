@@ -77,16 +77,6 @@ If you are using vimscript, you can use the following template:
 TODO: PC017: document what the handlers are
 
 
-    " project.vim - My cool project
-    fun! projectconfig.projectLoad(projectstate)
-        " executed once when a buffer for the project is first opened. Store per-project state in
-        " a:projectstate
-    endfun
-
-    fun! projectconfig.projectUnload(projectstate)
-        " executed once when the last buffer for a project is unloaded.
-    endfun
-
     " XXX: I need to do some experimentation to see which autocmd is right for this thing
 
     fun! projectconfig.projectBufLoad(projectstate, bufnr)
@@ -98,9 +88,13 @@ TODO: PC017: document what the handlers are
     endfun
 
     fun! projectconfig.BufNew(projectstate)
+        " No good - the current buffer % may be different from the buffer being created.
+        " (See TODO/PC017.txt)
     endfun
 
     fun! projectconfig.BufNewFile(projectstate)
+        " When starting to edit a file that doesn't exist.  Can be used to read
+        " in a skeleton file.
     endfun
 
     fun! projectconfig.BufReadPre(projectstate)
