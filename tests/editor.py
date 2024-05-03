@@ -5,6 +5,7 @@ import time
 from functools import partial
 from pathlib import Path
 from textwrap import dedent
+from typing import Iterator
 
 import pytest
 
@@ -17,10 +18,11 @@ class Editor:
     _p = None
     _cwd = None
 
-    def __init__(self, tmpdir: Path):
+    def __init__(self, *, vimrcdir: Path, personalconfigsdir: Path):
         super().__init__()
 
-        self._configs_dir = tmpdir / 'project-configs'
+        self._vimrcdir = vimrcdir
+        self._personal_configs_dir = personalconfigsdir
 
     @classmethod
     def get_pytest_param(class_):
@@ -36,11 +38,8 @@ class Editor:
         assert self._cwd is None
         self._cwd = cwd
 
-        # where to store configs
-        init_call = f'vimprojectconfig#initialise({{"project_config_dirs": {{"Personal": "{self._configs_dir}"}}}})'
-
         env = {**dict(os.environ), 'VIM_PROJECT_CONFIG_UNIT_TESTING': '1'}
-        cmd = self.launch_cmd + ['+call ' + init_call]
+        cmd = self.launch_cmd
         self._p = subprocess.Popen(cmd, cwd=cwd, env=env)
 
     def cleanup(self):
@@ -80,10 +79,22 @@ class NeoVim(Editor):
     @property
     def launch_cmd(self):
         assert self._address is not None
+
+        # write an appropriate vimrc
+        self._vimrcdir.mkdir(exist_ok=True)
+        vimrc_path = self._vimrcdir / '.nvimrc'
+        vimrc_path.write_text(dedent(
+            f"""
+            source {TESTS_DIR}/vimrc.vim
+
+            " where to store configs
+            call vimprojectconfig#initialise({{"project_config_dirs": {{"Personal": "{self._personal_configs_dir}"}}}})
+            """.lstrip()
+        ))
+
         return [
             self.executable,
-            # don't load a vimrc
-            '-u', TESTS_DIR / 'vimrc.vim',
+            '-u', vimrc_path,
             # become server listening at this address
             '--listen', str(self._address),
         ]
@@ -265,10 +276,10 @@ class NeoVim(Editor):
     Vim.get_pytest_param(),
     NeoVim.get_pytest_param(),
 ])
-def editor(request, tmpdir):
+def editor(request, vimrcdir: Path, personalconfigsdir: Path) -> Iterator[Editor]:
     """A fixture that provides Vim and NeoVim as separate params."""
     class_ = request.param
-    instance = class_(tmpdir)
+    instance = class_(vimrcdir=vimrcdir, personalconfigsdir=personalconfigsdir)
     try:
         yield instance
     finally:
@@ -276,8 +287,9 @@ def editor(request, tmpdir):
 
 
 @pytest.fixture
-def ieditor(tmpdir):
-    instance = NeoVim(tmpdir)
+def ieditor(vimrcdir: Path, personalconfigsdir: Path) -> Iterator[Editor]:
+    instance = NeoVim(vimrcdir=vimrcdir, personalconfigsdir=personalconfigsdir)
+
     try:
         yield instance
     finally:

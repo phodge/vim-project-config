@@ -3,14 +3,25 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from textwrap import dedent
+from typing import Iterator
 
 import pytest
 
 
 @pytest.fixture()
-def tmpdir():
+def tmpdir() -> Iterator[Path]:
     with tempfile.TemporaryDirectory() as tmpdir:
         yield Path(tmpdir)
+
+
+@pytest.fixture()
+def personalconfigsdir(tmpdir) -> Path:
+    return tmpdir / 'project-configs'
+
+
+@pytest.fixture()
+def vimrcdir(tmpdir) -> Path:
+    return tmpdir / 'my-vim-files'
 
 
 @dataclass
