@@ -1,6 +1,4 @@
-import pytest
+import tests.editor  # noqa: F401
+from tests.editor import editor, ieditor  # noqa: F401
 
-import tests.editor
-from tests.editor import editor, ieditor
-
-from .projects import *
+from .projects import *  # noqa: F403, F401

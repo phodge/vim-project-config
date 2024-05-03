@@ -1,5 +1,4 @@
 from pathlib import Path
-from textwrap import dedent
 
 
 def test_creating_new_git_based_project(ieditor, git_repo_a):

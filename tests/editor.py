@@ -261,8 +261,6 @@ class NeoVim(Editor):
             self._get_expr(f"append(line('$'), ['{safe}'])")
 
 
-
-
 @pytest.fixture(params=[
     Vim.get_pytest_param(),
     NeoVim.get_pytest_param(),
