@@ -9,6 +9,14 @@ python = "^3.10"
 pytest = "^7.4.4"
 
 
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.10.0"
+flake8 = "^7.0.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.mypy]
+#strict = true
