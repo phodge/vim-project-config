@@ -16,6 +16,16 @@ fun! vimprojectconfig#_utils#getRootDir(bufnr, reportfail)
 
   let l:root_dir = <SID>getBufferRootDir(a:bufnr)
 
+  if l:root_dir is v:false
+    " TODO: PC038: I suspect this may prevent things working - it's not great
+    " that we are trying to figure out the buffer project when the buffer
+    " isn't yet sufficiently loaded
+    if a:reportfail
+      " ... ?
+    endif
+    return v:null
+  endif
+
   " store in cache
   let s:root_dir_cache[a:bufnr] = l:root_dir
 
@@ -58,7 +68,15 @@ endfun
 
 fun! <SID>getGitProjectRoot(bufnr)
   " TODO: PC029: add unit tests for this
-  let l:fullpath = fnamemodify(bufname(a:bufnr), ':p')
+  let l:thebuf = bufname(a:bufnr)
+
+  if l:thebuf == ""
+    " doesn't work if run this before the buffer is properly initialised
+    " TODO: PC038: add unit tests for this
+    return v:false
+  endif
+
+  let l:fullpath = fnamemodify(l:thebuf, ':p')
   let l:last = ''
   while len(l:fullpath) > 3 && l:fullpath != l:last
 

@@ -1,0 +1,1 @@
+PC038 test for and resolve errors when bufname() is empty on startup
