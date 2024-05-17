@@ -24,7 +24,7 @@ fun! <SID>getAllConfigs()
 endfun
 
 fun! vimprojectconfig#_configs#getCfgForBuffer(bufnr, reportfail)
-  " Returns a list of [cfg, projectroot, projectid] for the given buffer
+  " Returns a list of [cfg, projectid, projectroot] for the given buffer
   " Any of cfg, projectroot or projetid may be v:null
 
   " 1. Determine the project root dir for the buffer

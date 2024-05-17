@@ -1,7 +1,7 @@
 let s:config_state = get(s:, 'config_state', {})
 
 fun! vimprojectconfig#_engine#dispatch(eventname)
-  let l:cfg = vimprojectconfig#_configs#getCfgForBuffer(bufnr(), v:false)[0]
+  let [l:cfg, l:_, l:projectroot] = vimprojectconfig#_configs#getCfgForBuffer(bufnr(), v:false)
 
   if l:cfg is v:null
     " bail out - there is no config that matches this buffer
@@ -15,11 +15,21 @@ fun! vimprojectconfig#_engine#dispatch(eventname)
     let l:state = s:config_state[l:cfg.configloc.cfgkey]
     let l:Hook = get(l:state, a:eventname, v:null)
     if l:Hook isnot v:null
+      let l:fullpath = expand('<afile>:p')
+
+      " sanity check to make sure the filename is inside the project root
+      if stridx(l:fullpath, l:projectroot . '/') == 0
+        " strip off the project root
+        let l:relpath = strpart(l:fullpath, strlen(l:projectroot) + 1)
+      else
+        let l:relpath = v:null
+      endif
+
       let l:hook_args = [
             \ expand('<abuf>'),
             \ expand('<afile>:e'),
             \ expand('<afile>:t'),
-            \ expand('<afile>:p'),
+            \ l:relpath,
             \ ]
       let l:new_ft = call(l:Hook, l:hook_args, l:state.data)
       if type(l:new_ft) == type("") && strlen(l:new_ft)
