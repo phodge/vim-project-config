@@ -15,6 +15,8 @@ TESTS_DIR = Path(__file__).parent
 class Editor:
     skipreason: str | None = None
 
+    _has_quit: bool = False
+
     _p = None
     _cwd = None
 
@@ -48,12 +50,16 @@ class Editor:
         raise NotImplementedError(f"{self.__class__.__name__} does not implement .quit()")
 
     def cleanup(self):
+        if not self._has_quit:
+            self.quitall()
+
         try:
             if self._p:
                 self._cleanup_subprocess(self._p)
         finally:
             self._p = None
             self._cwd = None
+            self._has_quit = False
 
     def _cleanup_subprocess(self, job):
         # see if it is already terminated
@@ -126,6 +132,7 @@ class NeoVim(Editor):
         self._remote_command(f'edit {str(what)}')
 
     def quitall(self, bang: bool = True):
+        self._has_quit = True
         self._remote_command('quitall' + ('!' if bang else ''), allowexit2=True)
         self.cleanup()
 
