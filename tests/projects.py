@@ -52,8 +52,11 @@ class GitRepo:
         # autoload#vimprojectconfig#_utils <SID>getGitProjectId()
         if self._repo_id is None:
             cmd = ['git', '-C', self.path, 'rev-list', '--max-parents=0', 'HEAD']
-            sha = subprocess.check_output(cmd, encoding='utf-8').strip()
-            assert len(sha)
+            shas = subprocess.check_output(cmd, encoding='utf-8').strip()
+            assert len(shas)
+            shas = shas.split("\n")
+            shas.sort()
+            sha = "+".join(shas)
             self._repo_id = sha
         return self._repo_id
 

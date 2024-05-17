@@ -116,7 +116,7 @@ fun! vimprojectconfig#_utils#getProjectId(projectroot)
 
   let l:dotgit = a:projectroot . '/.git'
   if isdirectory(l:dotgit) || filereadable(l:dotgit)
-    let l:projectid = <SID>getGitProjectId(a:projectroot)
+    let l:projectid = vimprojectconfig#_utils#_getGitProjectId(a:projectroot)
   else
     " TODO: PC001: add support for detecting ID of other types of projects
     let l:projectid = v:null
@@ -144,7 +144,7 @@ fun! vimprojectconfig#_utils#getConfigStoreDir(storename)
   return l:dir
 endfun
 
-fun! <SID>getGitProjectId(reporoot)
+fun! vimprojectconfig#_utils#_getGitProjectId(reporoot)
   let l:cachekey = 'git-project-id-by-path|' . a:reporoot
   let l:cached = vimprojectconfig#_cache#get(l:cachekey, '__not_set__')
   if l:cached != '__not_set__'
@@ -156,13 +156,21 @@ fun! <SID>getGitProjectId(reporoot)
   " TODO: PC006: graceful error message when the git project has no commits
   " TODO: PC030: handle repos with multiple initial commits
   let l:checkcmd = ['git', '-C', a:reporoot, 'rev-list', '--max-parents=0', 'HEAD']
-  let l:sha = trim(system(l:checkcmd))
+  let l:output = trim(system(l:checkcmd))
   if v:shell_error
-    throw 'GIT ERROR: ' . l:sha
+    throw 'GIT ERROR: ' . l:output
   endif
 
   " TODO: PC006: graceful error message when the command did not return a sha string
-  let l:projectid = len(l:sha) ? l:sha : v:null
+  if len(l:output)
+    " if there are multiple commits, we sort them asciibetically and then join
+    " them with '+' into one long string
+    let l:shas = split(l:output)
+    call sort(l:shas)
+    let l:projectid = join(l:shas, '+')
+  else
+    let l:projectid = v:null
+  endif
   call vimprojectconfig#_cache#set(l:cachekey, l:projectid)
   return l:projectid
 endfun
