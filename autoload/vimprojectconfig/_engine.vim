@@ -88,7 +88,7 @@ fun! vimprojectconfig#_engine#configWasUpdated(configloc)
       endif
 
       " move to the window
-      exe 'wincmd' l:winnr 'w'
+      exe l:winnr . 'wincmd w'
 
       try
         " refresh the config ... by calling the BufEnter hook again
@@ -100,7 +100,7 @@ fun! vimprojectconfig#_engine#configWasUpdated(configloc)
     endfor
   finally
     " restore old currently-selected window
-    exe 'wincmd' l:oldwin 'w'
+    exe l:oldwin . 'wincmd w'
   endtry
 
   let l:reload_cmd = 'call vimprojectconfig#_engine#dispatch("BufEnter")'
