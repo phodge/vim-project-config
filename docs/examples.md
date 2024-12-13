@@ -32,6 +32,10 @@ that looks like this:
 
 - it should not be clobbered by after/ vimruntime files
 - proposed hook - projectconfig.BufEnter() - because the docs say useful for setting options for a file type
+<!--
+- NOTE: see TODO/PC043.txt where we need something that actually fires *before*
+  the vimruntime files are loaded.
+-->
 
 
 ## Set an option for a specific filetype in my project

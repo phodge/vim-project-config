@@ -1,0 +1,16 @@
+PC043 need a .FileType hook for setting b:variables before my vim ftplugins are loaded
+
+As clever as my new peter#LSPKeymaps* stuff is, I think it would just be a lot
+easier for some things if I could put this in my project config and let my
+ftplugin scripts act on the buffer-local variable:
+
+    fun! projectconfig.FileType.python(projectstate)
+        let b:isort_cmd = 'poetry run isort'
+    endfun
+
+This would probably also help with my line-length stuff that seems to
+initialise before I've set a custom value for 'tw'.
+
+XXX: note that we one of the explicit features of the current BufEnter hook is
+that it fires *after* the filetype plugins have been loaded for the current
+buffer, so you can easily override an option that was set in an ftplugin script.
